@@ -5,7 +5,7 @@ services:
       POSTGRES_DB: iam
       POSTGRES_USER: iam
       POSTGRES_PASSWORD: iam
-    ports: ["5432:5432"]
+    ports: ["15432:5432"]
     volumes: ["iam-pg:/var/lib/postgresql/data"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U iam -d iam"]
