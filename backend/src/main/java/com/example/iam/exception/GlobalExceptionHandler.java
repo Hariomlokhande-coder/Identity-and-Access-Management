@@ -68,13 +68,11 @@ public class GlobalExceptionHandler {
                 Map.of()
         );
     }
-
     private ResponseEntity<ErrorResponse> build(
             ErrorCode code,
             String message,
             HttpServletRequest request,
             Map<String, Object> details) {
-
         ErrorResponse body = ErrorResponse.of(
                 code,
                 message,
