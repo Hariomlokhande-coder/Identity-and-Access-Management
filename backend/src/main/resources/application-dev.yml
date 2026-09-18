@@ -1,0 +1,18 @@
+iam:
+  cookie:
+    secure: false
+
+  jwt:
+    allow-ephemeral-key: true
+
+  password:
+    min-length: 8
+    require-symbol: false
+
+  bootstrap:
+    admin-email: ${IAM_BOOTSTRAP_ADMIN_EMAIL:admin@localhost}
+    admin-password: ${IAM_BOOTSTRAP_ADMIN_PASSWORD:}
+
+logging:
+  level:
+    com.example.iam: DEBUG
