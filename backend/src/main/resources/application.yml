@@ -41,3 +41,40 @@ spring:
 
 server:
   port: ${SERVER_PORT:8081}
+
+iam:
+  issuer: ${IAM_ISSUER:http://localhost:8080}
+
+  login-url: ${IAM_LOGIN_URL:http://localhost:3000/login}
+  consent-url: ${IAM_CONSENT_URL:http://localhost:3000/consent}
+
+  cookie:
+    secure: ${IAM_COOKIE_SECURE:true}
+    same-site: ${IAM_COOKIE_SAME_SITE:Lax}
+
+  cors:
+    allowed-origins: ${IAM_CORS_ORIGINS:http://localhost:3000}
+    allowed-headers: Authorization,Content-Type,X-Correlation-Id
+    max-age: 3600
+
+  jwt:
+    access-token-ttl: ${IAM_ACCESS_TTL:PT10M}
+    clock-skew: PT45S
+    keys: ${IAM_JWT_KEYS:}
+    allow-ephemeral-key: ${IAM_ALLOW_EPHEMERAL_KEY:false}
+
+  token:
+    refresh-token-ttl: ${IAM_REFRESH_TTL:P30D}
+    authorization-code-ttl: PT1M
+    email-verification-ttl: PT24H
+    password-reset-ttl: PT30M
+    sso-session-ttl: P14D
+
+  password:
+    min-length: 12
+    max-length: 128
+    require-upper: true
+    require-lower: true
+    require-digit: true
+    require-symbol: true
+    bcrypt-strength: 12
