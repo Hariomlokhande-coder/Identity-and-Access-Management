@@ -78,3 +78,9 @@ iam:
     require-digit: true
     require-symbol: true
     bcrypt-strength: 12
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus

@@ -1,0 +1,22 @@
+spring:
+  flyway:
+    clean-disabled: false
+
+iam:
+  email:
+    outbox:
+      # Tests read the queued mail directly instead of delivering it.
+      dispatch-interval: PT1H
+  cookie:
+    secure: false
+  jwt:
+    allow-ephemeral-key: true
+  password:
+    min-length: 8
+    require-symbol: false
+  rate-limit:
+    enabled: false
+  bootstrap:
+    # Gives the suite an administrator to register client applications with.
+    admin-email: admin@test.local
+    admin-password: Str0ng!Passphrase1
