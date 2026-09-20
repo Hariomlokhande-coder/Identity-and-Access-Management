@@ -38,7 +38,6 @@ public class ApiException extends RuntimeException {
                 null
         );
     }
-
     public static ApiException conflict(String message) {
         return new ApiException(
                 ErrorCode.CONFLICT,
@@ -47,7 +46,6 @@ public class ApiException extends RuntimeException {
                 null
         );
     }
-
     public static ApiException invalid(String message) {
         return new ApiException(
                 ErrorCode.INVALID_REQUEST,
