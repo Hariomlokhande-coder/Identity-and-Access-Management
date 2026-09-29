@@ -69,4 +69,4 @@ public class Role {
     public boolean appliesTo(String clientId) {
         return clientApplication == null || clientApplication.getClientId().equals(clientId);
     }
-}s
+}
