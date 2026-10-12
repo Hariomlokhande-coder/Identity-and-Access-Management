@@ -11,6 +11,14 @@ public class ApiException extends RuntimeException {
         this(code, code.defaultMessage(), Map.of(), null);
     }
 
+    public ApiException(ErrorCode code, String message) {
+        this(code, message, Map.of(), null);
+    }
+
+    public ApiException(ErrorCode code, String message, Map<String, Object> details) {
+        this(code, message, details, null);
+    }
+
     public ApiException(
             ErrorCode code,
             String message,
@@ -38,6 +46,7 @@ public class ApiException extends RuntimeException {
                 null
         );
     }
+
     public static ApiException conflict(String message) {
         return new ApiException(
                 ErrorCode.CONFLICT,
@@ -46,6 +55,7 @@ public class ApiException extends RuntimeException {
                 null
         );
     }
+
     public static ApiException invalid(String message) {
         return new ApiException(
                 ErrorCode.INVALID_REQUEST,
