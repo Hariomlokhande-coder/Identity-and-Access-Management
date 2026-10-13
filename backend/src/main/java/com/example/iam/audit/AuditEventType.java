@@ -1,0 +1,34 @@
+package com.example.iam.audit;
+
+/** The security-relevant events the platform is required to record. */
+public enum AuditEventType {
+    USER_REGISTERED,
+    EMAIL_VERIFIED,
+    EMAIL_VERIFICATION_RESENT,
+    LOGIN,
+    LOGOUT,
+    ACCOUNT_LOCKED,
+    ACCOUNT_UNLOCKED,
+    ACCOUNT_STATUS_CHANGED,
+    ACCOUNT_DELETED,
+    PASSWORD_CHANGED,
+    PASSWORD_RESET_REQUESTED,
+    PASSWORD_RESET_COMPLETED,
+    TOKEN_REFRESHED,
+    /** Reuse of an already-rotated refresh token: treated as a compromise signal. */
+    REFRESH_TOKEN_REUSE_DETECTED,
+    SESSION_REVOKED,
+    ROLE_CREATED,
+    ROLE_UPDATED,
+    ROLE_DELETED,
+    ROLE_ASSIGNMENT_CHANGED,
+    CLIENT_CREATED,
+    CLIENT_UPDATED,
+    CLIENT_DELETED,
+    CLIENT_SECRET_ROTATED,
+    OAUTH_AUTHORIZATION_GRANTED,
+    OAUTH_AUTHORIZATION_DENIED,
+    OAUTH_TOKEN_ISSUED,
+    CONSENT_GRANTED,
+    CONSENT_REVOKED
+}
