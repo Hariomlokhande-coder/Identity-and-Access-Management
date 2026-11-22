@@ -1,10 +1,8 @@
 spring:
   application:
     name: iam-platform
-
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
-
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:15432/iam}
     username: ${DB_USERNAME:iam}
@@ -12,7 +10,6 @@ spring:
     hikari:
       maximum-pool-size: ${DB_POOL_SIZE:20}
       connection-timeout: 3000
-
   jpa:
     open-in-view: false
     hibernate:
@@ -20,38 +17,69 @@ spring:
     properties:
       hibernate:
         jdbc.time_zone: UTC
-
+        query.in_clause_parameter_padding: true
   flyway:
     enabled: true
     baseline-on-migrate: true
-
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
       timeout: 2s
-
+      lettuce:
+        pool:
+          max-active: 32
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:1025}
-
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:false
+      mail.smtp.starttls.enable: ${MAIL_SMTP_TLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
   threads:
     virtual:
       enabled: true
 
 server:
   port: ${SERVER_PORT:8081}
+  error:
+    whitelabel:
+      enabled: false
+  forward-headers-strategy: framework
+  servlet:
+    session:
+      cookie:
+        # The platform is stateless; no servlet session cookie is ever issued.
+        name: UNUSED
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
 
 iam:
   issuer: ${IAM_ISSUER:http://localhost:8080}
-
+  # Absolute URLs of the hosted login / consent screens the authorize endpoint redirects to.
   login-url: ${IAM_LOGIN_URL:http://localhost:3000/login}
   consent-url: ${IAM_CONSENT_URL:http://localhost:3000/consent}
-
   cookie:
     secure: ${IAM_COOKIE_SECURE:true}
+    domain: ${IAM_COOKIE_DOMAIN:}
     same-site: ${IAM_COOKIE_SAME_SITE:Lax}
-
   cors:
     allowed-origins: ${IAM_CORS_ORIGINS:http://localhost:3000}
     allowed-headers: Authorization,Content-Type,X-Correlation-Id
@@ -60,7 +88,10 @@ iam:
   jwt:
     access-token-ttl: ${IAM_ACCESS_TTL:PT10M}
     clock-skew: PT45S
+    # Signing keys. The first ACTIVE key signs; every listed key still verifies,
+    # which is what makes rotation safe for in-flight tokens (section 20.3).
     keys: ${IAM_JWT_KEYS:}
+    # Dev-only fallback: generate an ephemeral RSA key at startup when no key is configured.
     allow-ephemeral-key: ${IAM_ALLOW_EPHEMERAL_KEY:false}
 
   token:
@@ -77,10 +108,90 @@ iam:
     require-lower: true
     require-digit: true
     require-symbol: true
+    max-repeated-chars: 3
+    breach-check-enabled: ${IAM_BREACH_CHECK:false}
+    breach-check-url: https://api.pwnedpasswords.com/range/
     bcrypt-strength: 12
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus
+  lockout:
+    max-failed-attempts: 5
+    window: PT15M
+    lock-duration: PT15M
+    # Repeated lockouts extend the duration up to this ceiling.
+    max-lock-duration: PT2H
+    captcha-after-attempts: 3
+
+  rate-limit:
+    enabled: true
+    # First matching rule wins. `key` selects the identity the counter is bound to.
+    rules:
+      - path: /auth/login
+        methods: [POST]
+        limit: 10
+        window: PT1M
+        key: IP
+      - path: /auth/register
+        methods: [POST]
+        limit: 5
+        window: PT1H
+        key: IP
+      - path: /auth/forgot-password
+        methods: [POST]
+        limit: 5
+        window: PT1H
+        key: IP
+      - path: /auth/reset-password
+        methods: [POST]
+        limit: 10
+        window: PT1H
+        key: IP
+      - path: /auth/resend-verification
+        methods: [POST]
+        limit: 5
+        window: PT1H
+        key: IP
+      - path: /auth/refresh
+        methods: [POST]
+        limit: 60
+        window: PT1M
+        key: IP
+      - path: /oauth2/token
+        methods: [POST]
+        limit: 120
+        window: PT1M
+        key: IP
+      - path: /**
+        methods: []
+        limit: 600
+        window: PT1M
+        key: PRINCIPAL_OR_IP
+
+  security:
+    # TOKEN  - trust the authorities inside the access token (stateless, fastest).
+    # LIVE   - reload authorities from the database on every request (no stale window).
+    permission-check-mode: ${IAM_PERMISSION_CHECK_MODE:TOKEN}
+    revoke-sessions-on-password-change: true
+    max-sessions-per-user: 20
+
+  email:
+    from: ${IAM_MAIL_FROM:no-reply@localhost}
+    verification-url-template: ${IAM_VERIFY_URL:http://localhost:3000/verify-email?token=%s}
+    reset-url-template: ${IAM_RESET_URL:http://localhost:3000/reset-password?token=%s}
+    outbox:
+      batch-size: 50
+      max-attempts: 8
+      dispatch-interval: PT10S
+
+  cleanup:
+    # Expired/consumed token rows are purged after this grace period. They outlive
+    # their expiry on purpose: a replayed refresh token has to be recognisable as
+    # revoked rather than merely unknown.
+    retention: P7D
+    cron: "0 15 3 * * *"
+
+logging:
+  level:
+    root: INFO
+    com.example.iam: ${IAM_LOG_LEVEL:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{correlationId:-}] %logger{36} - %msg%n"
