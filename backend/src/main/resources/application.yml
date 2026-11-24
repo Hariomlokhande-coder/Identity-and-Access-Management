@@ -192,6 +192,6 @@ iam:
 logging:
   level:
     root: INFO
-    com.example.iam: ${IAM_LOG_LEVEL:INFO}
+    io.github.hariomlokhande.iam: ${IAM_LOG_LEVEL:INFO}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{correlationId:-}] %logger{36} - %msg%n"

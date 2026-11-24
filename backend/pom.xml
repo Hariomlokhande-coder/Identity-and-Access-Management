@@ -11,10 +11,10 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.example</groupId>
+    <groupId>io.github.hariomlokhande</groupId>
     <artifactId>iam-platform</artifactId>
     <version>1.0.0</version>
-    <name>iam-platform</name>
+    <name>Identity and Access Management Platform</name>
     <description>Centralized Identity and Access Management platform</description>
 
     <properties>
