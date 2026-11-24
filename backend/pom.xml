@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>io.github.hariomlokhande</groupId>
+    <groupId>com.iamplatform</groupId>
     <artifactId>iam-platform</artifactId>
     <version>1.0.0</version>
     <name>Identity and Access Management Platform</name>

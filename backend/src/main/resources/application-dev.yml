@@ -15,4 +15,4 @@ iam:
 
 logging:
   level:
-    io.github.hariomlokhande.iam: DEBUG
+    com.iamplatform: DEBUG

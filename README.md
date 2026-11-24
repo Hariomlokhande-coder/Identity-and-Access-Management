@@ -127,7 +127,7 @@ expires on its own, and the identity that matters lives in PostgreSQL.
 One package per capability, each owning its entities, service and controller:
 
 ```
-io.github.hariomlokhande.iam
+com.iamplatform
 ├── auth/          registration, login, password flows
 │   ├── token/     JWT signing, refresh rotation, revocation markers
 │   └── credential/ single-use verification and reset tokens
