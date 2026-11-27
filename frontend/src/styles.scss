@@ -1,0 +1,483 @@
+/* Design system for the IAM console.
+   Tokens first, then the element styles every screen shares. Components keep their
+   own layout locally; nothing here exists unless more than one screen needs it. */
+
+/* ------------------------------------------------------------------ *
+   Tokens
+ * ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(/fonts/sourcesans3.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(/fonts/sourceserif4.woff2) format('woff2');
+}
+
+:root {
+  color-scheme: light dark;
+
+  --bg-canvas: #F4F4F4;
+  --bg-surface: #FFFFFF;
+  --text-primary: #171717;
+  --text-muted: #525252;
+  --accent-primary: #262626;
+  --accent-hover: #404040;
+  --border-subtle: #DADADA;
+
+  --font-sans: 'Source Sans 3', 'Trebuchet MS', sans-serif;
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-mono: 'Cascadia Mono', Consolas, monospace;
+
+  --bg: var(--bg-canvas);
+  --surface: var(--bg-surface);
+  --surface-2: color-mix(in srgb, var(--bg) 60%, var(--surface));
+  --surface-3: var(--bg);
+  --border: var(--border-subtle);
+  --border-strong: #858585;
+  --fg: var(--text-primary);
+  --fg-muted: var(--text-muted);
+  --fg-subtle: var(--text-muted);
+  --accent: var(--accent-primary);
+  --accent-fg: #FFFFFF;
+  --accent-soft: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  --chip-bg: var(--surface-2);
+
+  --ok-bg: #E4EFEB;
+  --ok-border: #B6D2C9;
+  --ok-fg: #28564B;
+  --ok-dot: var(--ok-fg);
+  --warn-bg: #F3EFE2;
+  --warn-border: #D6C69E;
+  --warn-fg: #654D1E;
+  --warn-dot: var(--warn-fg);
+  --danger-bg: #F6EBEA;
+  --danger-border: #CB9696;
+  --danger-fg: #8B3840;
+  --danger-hover: #702A31;
+  --danger-action-text: #FFFFFF;
+  --danger-dot: var(--danger-fg);
+  --info-bg: var(--bg);
+  --info-border: var(--border);
+  --info-fg: var(--fg);
+  --info-dot: var(--fg-muted);
+  --scrim: rgb(23 23 23 / 0.58);
+
+  --r-sm: 3px;
+  --r-md: 4px;
+  --r-lg: 6px;
+  --r-full: 999px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --speed: 140ms;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-canvas: #171717;
+    --bg-surface: #232323;
+    --text-primary: #F5F5F5;
+    --text-muted: #BFBFBF;
+    --accent-primary: #EEEEEE;
+    --accent-hover: #D5D5D5;
+    --border-subtle: #434343;
+    --border-strong: #808080;
+    --accent-fg: #232323;
+    --ok-bg: #243B37;
+    --ok-border: #4F7168;
+    --ok-fg: #AFD6C9;
+    --warn-bg: #3B3527;
+    --warn-border: #81704B;
+    --warn-fg: #EAD39B;
+    --danger-bg: #3C2A2E;
+    --danger-border: #8E6267;
+    --danger-fg: #F1ADB1;
+    --danger-hover: #F9C8CB;
+    --danger-action-text: #232323;
+    --scrim: rgb(14 14 14 / 0.72);
+  }
+}
+
+/* ------------------------------------------------------------------ *
+   Base
+ * ------------------------------------------------------------------ */
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; min-height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Headings are set tighter than the body. At console sizes the default tracking
+   makes a title read as a sentence rather than a label. */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+h1 { font-size: clamp(1.9rem, 4vw, 2.65rem); margin: 0 0 0.3rem; letter-spacing: -0.022em; }
+h2 { font-size: 1.2rem; margin: 0 0 0.9rem; }
+h3 { font-size: 0.9rem; margin: 0 0 0.5rem; }
+
+a {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+  text-underline-offset: 2px;
+}
+a:hover { color: var(--accent-hover); text-decoration-color: currentColor; }
+
+code, .mono {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  font-variant-ligatures: none;
+}
+
+::selection { background: var(--accent-soft); color: var(--fg); }
+
+/* One focus treatment everywhere, so keyboard use looks deliberate. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--r-sm);
+}
+
+/* ------------------------------------------------------------------ *
+   Forms
+ * ------------------------------------------------------------------ */
+
+.field { display: block; margin-bottom: 1.05rem; }
+
+.field__label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--fg-muted);
+}
+
+.field__hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: var(--fg-subtle);
+}
+
+.field__error {
+  margin: 0.4rem 0 0;
+  font-size: 0.76rem;
+  color: var(--danger-fg);
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='search'],
+select,
+textarea {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.885rem;
+}
+
+input::placeholder, textarea::placeholder { color: var(--fg-subtle); }
+
+input:hover:not(:disabled),
+select:hover:not(:disabled),
+textarea:hover:not(:disabled) { border-color: color-mix(in srgb, var(--accent) 40%, var(--border-strong)); }
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--danger-border);
+  background: color-mix(in srgb, var(--danger-bg) 55%, var(--surface));
+}
+
+input:disabled, select:disabled, textarea:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--surface-3);
+}
+
+textarea { resize: vertical; min-height: 5rem; line-height: 1.5; }
+
+select { padding-inline-end: 1.5rem; }
+
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.25rem 0;
+  font-size: 0.855rem;
+  cursor: pointer;
+}
+label.checkbox input {
+  width: auto;
+  accent-color: var(--accent);
+  inline-size: 1rem;
+  block-size: 1rem;
+  cursor: pointer;
+}
+
+fieldset { border: 1px solid var(--border); border-radius: var(--r-md); }
+legend { padding: 0 0.4rem; }
+
+/* ------------------------------------------------------------------ *
+   Buttons
+ * ------------------------------------------------------------------ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.855rem;
+  font-weight: 550;
+  letter-spacing: -0.003em;
+  line-height: 1.35;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: transform var(--speed) var(--ease);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-fg);
+}
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+/* Solid red is reserved for the moment of commitment - the confirm button inside a
+   dialog. A list of rows each ending in a filled red button makes deletion the
+   loudest thing on the screen, which is exactly backwards. */
+.btn--danger {
+  background: var(--danger-fg);
+  border-color: transparent;
+  color: var(--danger-action-text);
+}
+.btn--danger:hover:not(:disabled) {
+  background: var(--danger-hover);
+}
+
+/* The list-level destructive action: legible as dangerous, but not shouting until
+   the pointer is on it. */
+.btn--danger-quiet {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--danger-fg);
+}
+.btn--danger-quiet:hover:not(:disabled) {
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
+  color: var(--danger-fg);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: var(--border);
+}
+.btn--ghost:hover:not(:disabled) { background: var(--chip-bg); }
+
+.btn--sm { padding: 0.3rem 0.65rem; font-size: 0.79rem; border-radius: 7px; }
+.btn--block { width: 100%; }
+
+.btn--link {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--accent);
+  font-weight: 550;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.btn--link:hover:not(:disabled) { background: none; color: var(--accent-hover); }
+
+/* ------------------------------------------------------------------ *
+   Surfaces
+ * ------------------------------------------------------------------ */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1.35rem;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.page-header__subtitle {
+  margin: 0;
+  color: var(--fg-muted);
+  font-size: 0.865rem;
+  line-height: 1.55;
+  max-width: 68ch;
+}
+
+/* ------------------------------------------------------------------ *
+   Tables
+ * ------------------------------------------------------------------ */
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 -0.4rem;
+  padding: 0 0.4rem;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.855rem;
+}
+
+table.data th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--fg-subtle);
+  background: var(--surface);
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+table.data td {
+  padding: 0.7rem 0.8rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+table.data tbody tr:hover { background: var(--surface-2); }
+table.data tbody tr:last-child td { border-bottom: 0; }
+
+/* Links inside a table are already obviously links from position and hover. The
+   underline on every row turns the column into a wall of blue rules. */
+table.data td a { text-decoration: none; font-weight: 550; }
+table.data td a:hover { text-decoration: underline; }
+
+/* A timestamp that wraps onto two lines doubles the height of every row it is in.
+   The wrapper scrolls horizontally instead. */
+table.data td.time, table.data th.time { white-space: nowrap; }
+
+.row-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.empty {
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--fg-subtle);
+  font-size: 0.875rem;
+}
+
+/* ------------------------------------------------------------------ *
+   Bits
+ * ------------------------------------------------------------------ */
+
+.chip {
+  display: inline-block;
+  padding: 0.12rem 0.45rem;
+  margin: 0.1rem 0.25rem 0.1rem 0;
+  border-radius: 6px;
+  background: var(--chip-bg);
+  border: 1px solid var(--border);
+  color: var(--fg-muted);
+  font-size: 0.71rem;
+  font-family: var(--font-mono);
+  letter-spacing: -0.01em;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding-bottom: 1.1rem;
+  margin-bottom: 0.2rem;
+  border-bottom: 1px solid var(--border);
+}
+.toolbar .field { margin-bottom: 0; }
+
+.muted { color: var(--fg-muted); }
+.subtle { color: var(--fg-subtle); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+/* Screens fade in rather than snapping, so a lazy-loaded route does not flash. */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .btn:active:not(:disabled) { transform: none; }
+}
