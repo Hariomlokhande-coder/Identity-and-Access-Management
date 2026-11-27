@@ -21,6 +21,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -94,6 +95,7 @@ public abstract class IntegrationTestBase {
      */
     @BeforeEach
     void clearTransientState() {
+        rest.getRestTemplate().setRequestFactory(new JdkClientHttpRequestFactory());
         redis.getConnectionFactory().getConnection().serverCommands().flushDb();
     }
 

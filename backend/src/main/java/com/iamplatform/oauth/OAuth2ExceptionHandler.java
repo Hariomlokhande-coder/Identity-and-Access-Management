@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
  * keeps the platform error shape.
  */
 @RestControllerAdvice(assignableTypes = OAuth2Controller.class)
+@Order(0)
 public class OAuth2ExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(OAuth2ExceptionHandler.class);

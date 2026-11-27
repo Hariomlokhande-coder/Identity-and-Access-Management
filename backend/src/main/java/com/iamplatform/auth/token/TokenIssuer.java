@@ -3,10 +3,13 @@ package com.iamplatform.auth.token;
 import com.iamplatform.auth.dto.TokenResponse;
 import com.iamplatform.client.ClientApplication;
 import com.iamplatform.config.IamProperties;
+import com.iamplatform.exception.ApiException;
+import com.iamplatform.exception.ErrorCode;
 import com.iamplatform.security.AuthorityResolver;
 import com.iamplatform.security.AuthorityResolver.ResolvedAuthorities;
 import com.iamplatform.session.UserSession;
 import com.iamplatform.user.User;
+import com.iamplatform.user.UserRepository;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Set;
@@ -29,13 +32,15 @@ public class TokenIssuer {
     private final RefreshTokenService refreshTokenService;
     private final AuthorityResolver authorityResolver;
     private final IamProperties properties;
+    private final UserRepository users;
 
     public TokenIssuer(JwtService jwtService, RefreshTokenService refreshTokenService,
-            AuthorityResolver authorityResolver, IamProperties properties) {
+            AuthorityResolver authorityResolver, IamProperties properties, UserRepository users) {
         this.jwtService = jwtService;
         this.refreshTokenService = refreshTokenService;
         this.authorityResolver = authorityResolver;
         this.properties = properties;
+        this.users = users;
     }
 
     /**
@@ -56,7 +61,10 @@ public class TokenIssuer {
     /** Issues the token pair that follows a refresh-token rotation. */
     @Transactional
     public TokenResponse issueForRotation(RefreshTokenService.RotationResult rotation) {
-        return build(rotation.user(), rotation.session(), rotation.client(), null, null, rotation.rawToken());
+        User user = users.findWithRolesById(rotation.user().getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.INVALID_REFRESH_TOKEN,
+                        ErrorCode.INVALID_REFRESH_TOKEN.defaultMessage()));
+        return build(user, rotation.session(), rotation.client(), null, null, rotation.rawToken());
     }
 
     public Duration refreshTtl(ClientApplication client) {

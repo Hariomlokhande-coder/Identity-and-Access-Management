@@ -291,6 +291,7 @@ class OAuth2FlowIT extends IntegrationTestBase {
 
     private ResponseEntity<String> postJson(String path, Object body, String cookie) {
         HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(List.of(MediaType.TEXT_HTML));
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(HttpHeaders.COOKIE, cookie);
         return raw.exchange(url(path), HttpMethod.POST, new HttpEntity<>(body, headers), String.class);
