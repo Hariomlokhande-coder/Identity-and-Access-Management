@@ -26,6 +26,28 @@ services:
     image: axllent/mailpit:latest
     ports: ["1025:1025", "8025:8025"]
 
+  frontend:
+    profiles: ["console"]
+    image: node:22-alpine
+    working_dir: /app
+    # API calls run in the browser and use the Spring Boot server on localhost:8081.
+    command: ["sh", "-c", "npm ci --legacy-peer-deps && npm start -- --host 0.0.0.0 --poll 2000"]
+    ports: ["127.0.0.1:3001:3001"]
+    volumes:
+      - ../frontend:/app:ro
+      - type: volume
+        source: iam-frontend-modules
+        target: /app/node_modules
+        volume:
+          nocopy: true
+      - type: volume
+        source: iam-frontend-cache
+        target: /app/.angular
+        volume:
+          nocopy: true
+
 volumes:
   iam-pg:
   iam-redis:
+  iam-frontend-modules:
+  iam-frontend-cache:

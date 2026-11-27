@@ -13,8 +13,8 @@ Install JDK 21, Maven, and Docker. Start from the repository root.
 
 ```bash
 cd backend
-docker compose up -d  # PostgreSQL :15432, Redis :6379, Mailpit SMTP :1025 and UI :8025
-mvn spring-boot:run                  # starts on :8080 with the dev profile
+docker compose up -d  # PostgreSQL :15432, Redis :6379, Mailpit :8025
+mvn spring-boot:run                  # starts on :8081 with the dev profile
 ```
 
 Flyway creates the schema and seeds the baseline roles and permissions on first start.
@@ -29,8 +29,9 @@ IAM_BOOTSTRAP_ADMIN_PASSWORD='Ch4nge-me-now!' mvn spring-boot:run
 Nothing is created unless both are set and the `users` table is empty, so a forgotten
 default password can never become a backdoor.
 
-- API docs: <http://localhost:8080/swagger-ui.html>
-- Discovery: <http://localhost:8080/.well-known/openid-configuration>
+If the Angular project is available in `../frontend`, run `docker compose --profile console up -d frontend` from `backend`, then open <http://localhost:3001>.
+- API docs: <http://localhost:8081/swagger-ui.html>
+- Discovery: <http://localhost:8081/.well-known/openid-configuration>
 
 ### Tests
 

@@ -161,9 +161,9 @@ public class IamProperties {
     public static class Email {
         private String from = "no-reply@localhost";
         private String verificationUrlTemplate =
-                "http://localhost:3000/verify-email?token=%s";
+                "http://localhost:3001/verify-email?token=%s";
         private String resetUrlTemplate =
-                "http://localhost:3000/reset-password?token=%s";
+                "http://localhost:3001/reset-password?token=%s";
 
         private final Outbox outbox = new Outbox();
 

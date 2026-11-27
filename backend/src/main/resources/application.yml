@@ -72,16 +72,16 @@ springdoc:
     path: /swagger-ui.html
 
 iam:
-  issuer: ${IAM_ISSUER:http://localhost:8080}
+  issuer: ${IAM_ISSUER:http://localhost:8081}
   # Absolute URLs of the hosted login / consent screens the authorize endpoint redirects to.
-  login-url: ${IAM_LOGIN_URL:http://localhost:3000/login}
-  consent-url: ${IAM_CONSENT_URL:http://localhost:3000/consent}
+  login-url: ${IAM_LOGIN_URL:http://localhost:3001/login}
+  consent-url: ${IAM_CONSENT_URL:http://localhost:3001/consent}
   cookie:
     secure: ${IAM_COOKIE_SECURE:true}
     domain: ${IAM_COOKIE_DOMAIN:}
     same-site: ${IAM_COOKIE_SAME_SITE:Lax}
   cors:
-    allowed-origins: ${IAM_CORS_ORIGINS:http://localhost:3000}
+    allowed-origins: ${IAM_CORS_ORIGINS:http://localhost:3001}
     allowed-headers: Authorization,Content-Type,X-Correlation-Id
     max-age: 3600
 
@@ -175,8 +175,8 @@ iam:
 
   email:
     from: ${IAM_MAIL_FROM:no-reply@localhost}
-    verification-url-template: ${IAM_VERIFY_URL:http://localhost:3000/verify-email?token=%s}
-    reset-url-template: ${IAM_RESET_URL:http://localhost:3000/reset-password?token=%s}
+    verification-url-template: ${IAM_VERIFY_URL:http://localhost:3001/verify-email?token=%s}
+    reset-url-template: ${IAM_RESET_URL:http://localhost:3001/reset-password?token=%s}
     outbox:
       batch-size: 50
       max-attempts: 8
