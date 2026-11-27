@@ -103,6 +103,7 @@ public class ClientApplication {
         return candidate != null && redirectUris.contains(candidate);
     }
 
+
     public Duration accessTokenTtlOr(Duration fallback) {
         return accessTokenTtlSeconds == null
                 ? fallback
